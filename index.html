@@ -451,28 +451,14 @@ canvas { max-width:100%; }
 /* ── LANZADOR: elegir Mi Día o Finanzas ─────────────────── */
 .nav-sec{display:contents}
 body[data-space="dia"] .nav-sec[data-sp="fin"],body[data-space="fin"] .nav-sec[data-sp="dia"]{display:none}
-.nav-switch{color:var(--dim);font-size:12px;border:1px dashed var(--line-2);margin-bottom:6px}
-#launcher{position:fixed;inset:0;z-index:9000;background:radial-gradient(90% 70% at 50% 0%,rgba(214,170,74,.10),transparent 60%),var(--bg);display:none;overflow-y:auto;padding-block:40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-#launcher.open{display:flex;flex-direction:column;align-items:center;justify-content:center}
-.ln-wrap{width:100%;max-width:720px;display:flex;flex-direction:column;gap:28px}
-.ln-head{text-align:center}
-.ln-kicker{font-family:var(--display);font-size:12px;letter-spacing:.3em;color:var(--gold)}
+.sp-switch{display:grid;grid-template-columns:1fr 1fr;gap:3px;padding:3px;background:var(--bg);border:1px solid var(--line);border-radius:var(--r);margin-bottom:10px}
+.sp-btn{all:unset;cursor:pointer;box-sizing:border-box;display:flex;align-items:center;justify-content:center;gap:6px;padding:8px 6px;border-radius:7px;font-size:12.5px;font-weight:600;color:var(--muted);white-space:nowrap;transition:background .15s,color .15s}
+.sp-btn:hover{color:var(--fg)}
+.sp-btn:focus-visible{outline:2px solid var(--gold-2);outline-offset:1px}
+body[data-space="dia"] .sp-btn[data-to="dia"],body[data-space="fin"] .sp-btn[data-to="fin"]{background:linear-gradient(180deg,var(--gold-2),var(--gold));color:var(--gold-ink)}
 .logo-copy{display:block;margin:0 auto;height:auto;border-radius:10px;filter:drop-shadow(0 0 24px rgba(214,170,74,.22))}
 .login-logo{width:min(240px,70vw);margin-bottom:18px}
-.ln-logo{width:min(180px,50vw);margin-bottom:14px}
-.ln-title{font-family:var(--display);font-size:clamp(28px,5vw,40px);font-weight:700;letter-spacing:.08em;color:var(--fg);margin-top:4px}
-.ln-hello{color:var(--muted);margin-top:6px}
-.ln-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.ln-card{all:unset;cursor:pointer;box-sizing:border-box;display:flex;flex-direction:column;gap:10px;padding:26px 24px;border:1px solid var(--line-2);border-radius:14px;background:var(--panel);transition:border-color .15s,transform .15s,background .15s}
-.ln-card:hover,.ln-card:focus-visible{border-color:var(--gold);background:var(--panel-2);transform:translateY(-2px)}
-.ln-card:focus-visible{outline:2px solid var(--gold-2);outline-offset:2px}
-.ln-ico{font-size:30px;line-height:1}
-.ln-name{font-family:var(--display);font-size:22px;font-weight:600;color:var(--gold-2);letter-spacing:.04em}
-.ln-desc{color:var(--muted);font-size:13px;line-height:1.55}
-.ln-go{margin-top:auto;font-size:12px;font-weight:600;color:var(--gold);letter-spacing:.06em;text-transform:uppercase}
-.ln-foot{text-align:center;font-family:var(--display);font-size:10px;letter-spacing:.32em;color:var(--dim)}
-@media (max-width:560px){.ln-grid{grid-template-columns:1fr}}
-@media (max-width:720px){.nav-switch{flex:0 0 auto;margin-bottom:0;border:none}}
+@media (max-width:720px){.sp-switch{flex:0 0 auto;margin:0 8px 0 0;align-self:center}.sp-btn{padding:6px 10px}}
 /* ── UNIFICADO: Mi Día + AR Finanzas ───────────────────── */
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
 .right-col{position:relative;min-width:0;min-height:100vh;display:flex;flex-direction:column}
@@ -656,7 +642,10 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
     </div>
 
     <nav class="nav-group">
-      <button class="nav-item nav-switch" onclick="showLauncher()"><span class="nav-icon">⇄</span> Cambiar de app</button>
+      <div class="sp-switch" role="group" aria-label="App">
+        <button class="sp-btn" data-to="dia" onclick="openSpace('dia')"><span>📅</span> Mi Día</button>
+        <button class="sp-btn" data-to="fin" onclick="openSpace('fin')"><span>💶</span> Finanzas</button>
+      </div>
       <div class="nav-sec" data-sp="dia">
       <div class="nav-label">MI DÍA</div>
       <button class="nav-item active" onclick="switchScreen('hoy',this)"><span class="nav-icon">📅</span> Hoy</button>
@@ -1048,32 +1037,6 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
-<!-- ═══ LANZADOR ═════════════════════════════════════════ -->
-<div id="launcher" role="dialog" aria-label="Elige una app">
-  <div class="ln-wrap">
-    <div class="ln-head">
-      <img class="logo-copy ln-logo" alt="AR FX Trading">
-      <div class="ln-title">MI ESPACIO</div>
-      <div class="ln-hello" id="lnHello">¿Por dónde empiezas hoy?</div>
-    </div>
-    <div class="ln-grid">
-      <button class="ln-card" id="lnDia" onclick="openSpace('dia')">
-        <span class="ln-ico">📅</span>
-        <span class="ln-name">Mi Día</span>
-        <span class="ln-desc">Tareas del día, diario, journal de trading, semana y KPIs.</span>
-        <span class="ln-go">Entrar →</span>
-      </button>
-      <button class="ln-card" id="lnFin" onclick="openSpace('fin')">
-        <span class="ln-ico">💶</span>
-        <span class="ln-name">Finanzas</span>
-        <span class="ln-desc">Movimientos, reparto de payouts, presupuesto, fondo y patrimonio.</span>
-        <span class="ln-go">Entrar →</span>
-      </button>
-    </div>
-    <div class="ln-foot">ACTA NON VERBA</div>
-  </div>
-</div>
-
 <!-- ═══ LOGIN SCREEN ════════════════════════════════════════ -->
 <div id="loginScreen" style="display:flex;position:fixed;inset:0;z-index:9999;background:var(--bg);flex-direction:column;align-items:center;justify-content:center;padding:24px">
   <div style="max-width:340px;width:100%;text-align:center">
@@ -1177,7 +1140,6 @@ function saveState() {
 function showLogin() {
   document.getElementById('loginScreen').style.display = 'flex';
   document.querySelector('.app').style.display = 'none';
-  document.getElementById('launcher').classList.remove('open');
   // Reset login button state
   const btn = document.getElementById('loginBtn');
   if(btn){ btn.disabled=false; btn.style.opacity='1'; }
@@ -1186,21 +1148,11 @@ function showLogin() {
 }
 function showApp() {
   document.getElementById('loginScreen').style.display = 'none';
-  showLauncher();
-}
-function showLauncher() {
-  document.querySelector('.app').style.display = 'none';
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  const u=document.getElementById('userName');
-  const n=(u&&u.textContent||'').trim().split(' ')[0];
-  document.getElementById('lnHello').textContent = n ? 'Hola, '+n+'. ¿Por dónde empiezas hoy?' : '¿Por dónde empiezas hoy?';
-  document.getElementById('launcher').classList.add('open');
-  document.getElementById('lnDia').focus();
+  openSpace(document.body.dataset.space || 'dia');
 }
 function openSpace(sp) {
   document.body.dataset.space = sp;
   document.getElementById('appName').textContent = sp==='fin' ? 'FINANZAS' : 'MI DÍA';
-  document.getElementById('launcher').classList.remove('open');
   document.querySelector('.app').style.display = 'grid';
   if (sp==='fin') switchToFinanzas('panel', document.querySelector('.nav-item[data-fin="panel"]'));
   else switchScreen('hoy', document.querySelector('.nav-sec[data-sp="dia"] .nav-item'));
